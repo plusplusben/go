@@ -62,6 +62,12 @@ type generalStructDecoder struct {
 }
 
 func (decoder *generalStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
+	for _, extension := range extensions {
+		extension.StructDecodedHook(ptr, decoder.typ)
+	}
+	for _, extension := range iter.cfg.extraExtensions {
+		extension.StructDecodedHook(ptr, decoder.typ)
+	}
 	if !iter.readObjectStart() {
 		return
 	}
@@ -125,6 +131,12 @@ type skipObjectDecoder struct {
 }
 
 func (decoder *skipObjectDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
+	for _, extension := range extensions {
+		extension.StructDecodedHook(ptr, decoder.typ)
+	}
+	for _, extension := range iter.cfg.extraExtensions {
+		extension.StructDecodedHook(ptr, decoder.typ)
+	}
 	valueType := iter.WhatIsNext()
 	if valueType != ObjectValue && valueType != NilValue {
 		iter.ReportError("skipObjectDecoder", "expect object or null")
